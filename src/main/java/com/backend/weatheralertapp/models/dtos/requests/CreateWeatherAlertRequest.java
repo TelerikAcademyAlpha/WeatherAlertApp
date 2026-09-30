@@ -4,7 +4,7 @@ import com.backend.weatheralertapp.enums.Severity;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record WeatherAlertRequest (
+public record CreateWeatherAlertRequest(
         @NotBlank
         String description,
 
