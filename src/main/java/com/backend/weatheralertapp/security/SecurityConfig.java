@@ -69,9 +69,11 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception ->
                         exception
-                                .authenticationEntryPoint(((request, response, authException) ->
-                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED
-                                        ))
+                                .authenticationEntryPoint((request, response, authException) ->
+                                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED)
+                                )
+                                .accessDeniedHandler((request, response, accessDeniedException) ->
+                                        response.sendError(HttpServletResponse.SC_FORBIDDEN)
                                 )
                 );
         return http.build();
