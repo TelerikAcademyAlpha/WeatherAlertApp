@@ -4,7 +4,6 @@ import com.backend.weatheralertapp.models.WeatherAlert;
 import com.backend.weatheralertapp.models.dtos.requests.CreateWeatherAlertRequest;
 import com.backend.weatheralertapp.models.dtos.requests.UpdateWeatherRequest;
 import com.backend.weatheralertapp.models.dtos.responses.WeatherAlertResponse;
-import org.apache.catalina.mbeans.SparseUserDatabaseMBean;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -2,7 +2,6 @@ package com.backend.weatheralertapp.models;
 
 import com.backend.weatheralertapp.enums.Severity;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -27,6 +27,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
-    private boolean isEnabled = false;
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = false;
 }
