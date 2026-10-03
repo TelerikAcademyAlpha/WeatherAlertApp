@@ -1,0 +1,23 @@
+spring:
+  application:
+    name:WeatherAlertApp
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/weather_alerts}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+
+  server:
+    error:
+      include-message: never
+
+  app:
+   bootstrap-admin:
+      enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
+      username: ${BOOTSTRAP_ADMIN_USERNAME:}
+      password: ${BOOTSTRAP_ADMIN_PASSWORD:}
