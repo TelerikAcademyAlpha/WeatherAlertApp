@@ -3,7 +3,7 @@ spring:
     name:WeatherAlertApp
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/weather_alerts}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/weather_alerts_db}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD}
 
@@ -18,6 +18,6 @@ spring:
 
   app:
    bootstrap-admin:
-      enabled: ${BOOTSTRAP_ADMIN_ENABLED:false}
+      enabled: ${BOOTSTRAP_ADMIN_ENABLED:true}
       username: ${BOOTSTRAP_ADMIN_USERNAME:}
       password: ${BOOTSTRAP_ADMIN_PASSWORD:}
