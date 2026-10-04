@@ -1,12 +1,15 @@
 package com.backend.weatheralertapp.services;
 
 import com.backend.weatheralertapp.api.GeocodingClient;
+import com.backend.weatheralertapp.events.GeocodingRequestedEvent;
 import com.backend.weatheralertapp.models.dtos.GeocodingResult;
 import com.backend.weatheralertapp.models.dtos.responses.GeocodingApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 
 @Service
@@ -22,7 +25,11 @@ public class GeocodingService {
     }
 
     @Async("taskExecutor")
-    public void addCoordinates(Long alertId, String locationName) {
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void handleGeocodingRequest(GeocodingRequestedEvent event) {
+        Long alertId = event.alertId();
+        String locationName = event.locationName();
+
         try {
             GeocodingApiResponse response =
                     geocodingClient.search(locationName);
@@ -49,16 +56,20 @@ public class GeocodingService {
             );
 
             if (!updated) {
-                log.warn("Alert {} could not be updated", alertId);
+                log.warn(
+                        "Alert {} could not be updated with coordinates for '{}'",
+                        alertId,
+                        locationName
+                );
             }
 
         } catch (Exception exception) {
             log.error(
-                    "Failed to geocode location '{}'",
+                    "Failed to geocode location '{}' for alert {}",
                     locationName,
+                    alertId,
                     exception
             );
         }
     }
-
 }

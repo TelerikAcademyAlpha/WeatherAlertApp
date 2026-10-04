@@ -1,5 +1,6 @@
 package com.backend.weatheralertapp.services;
 
+import com.backend.weatheralertapp.events.GeocodingRequestedEvent;
 import com.backend.weatheralertapp.mappers.Mapper;
 import com.backend.weatheralertapp.models.User;
 import com.backend.weatheralertapp.models.WeatherAlert;
@@ -8,6 +9,7 @@ import com.backend.weatheralertapp.models.dtos.requests.UpdateWeatherRequest;
 import com.backend.weatheralertapp.models.dtos.responses.WeatherAlertResponse;
 import com.backend.weatheralertapp.repositories.AlertRepository;
 import com.backend.weatheralertapp.repositories.UserRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -21,18 +23,18 @@ public class AlertService {
     private final AlertRepository alertRepository;
     private final UserRepository userRepository;
     private final Mapper map;
-    private final GeocodingService geocodingService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public AlertService(
             AlertRepository alertRepository,
             UserRepository userRepository,
             Mapper map,
-            GeocodingService geocodingService
+            ApplicationEventPublisher eventPublisher
     ) {
         this.alertRepository = alertRepository;
         this.userRepository = userRepository;
         this.map = map;
-        this.geocodingService = geocodingService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Transactional
@@ -50,9 +52,11 @@ public class AlertService {
 
         WeatherAlert savedAlert = alertRepository.save(alert);
 
-        geocodingService.addCoordinates(
-                savedAlert.getId(),
-                savedAlert.getLocationName()
+        eventPublisher.publishEvent(
+                new GeocodingRequestedEvent(
+                        savedAlert.getId(),
+                        savedAlert.getLocationName()
+                )
         );
 
         return map.toResponse(savedAlert);
@@ -79,9 +83,33 @@ public class AlertService {
     ) {
         WeatherAlert alert = getAlertOrThrow(id);
 
+        String oldLocation = alert.getLocationName();
+        String newLocation = request.locationName().trim();
+
+        boolean locationChanged =
+                !oldLocation.trim().equalsIgnoreCase(newLocation);
+
         map.updateEntity(request, alert);
 
+        alert.setLocationName(newLocation);
+
+        if (locationChanged) {
+            // coordinates from provious location are not valid anymore
+            alert.setLatitude(null);
+            alert.setLongitude(null);
+        }
+
         WeatherAlert savedAlert = alertRepository.save(alert);
+
+        if (locationChanged) {
+            eventPublisher.publishEvent(
+                    new GeocodingRequestedEvent(
+                            savedAlert.getId(),
+                            savedAlert.getLocationName()
+                    )
+            );
+        }
+
         return map.toResponse(savedAlert);
     }
 
