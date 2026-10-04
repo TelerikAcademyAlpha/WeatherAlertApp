@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 public class AuthService {
 
@@ -43,20 +45,7 @@ public class AuthService {
 
         User saved = userRepository.save(user);
 
-        return new UserResponse(
-                saved.getId(),
-                saved.getUsername(),
-                saved.getRole(),
-                saved.isEnabled()
-        );
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    public UserResponse blockUser(Long userId) {
-        User user = findUser(userId);
-        user.setEnabled(false);
-
-        return toResponse(userRepository.save(user));
+        return toResponse(saved);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -75,6 +64,54 @@ public class AuthService {
                                 "User not found"
                         )
                 );
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse getUserById(Long userId) {
+        return toResponse(findUser(userId));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse blockUser(
+            Long userId,
+            String currentUsername
+    ) {
+        User user = findUser(userId);
+
+        if (user.getUsername().equals(currentUsername)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "You cannot block your own account"
+            );
+        }
+
+        user.setEnabled(false);
+
+        return toResponse(userRepository.save(user));
+    }
+
+    public UserResponse getCurrentUser(
+            String username
+    ) {
+
+        User user = userRepository
+                .findByUsername(username)
+                .orElseThrow(() ->
+                        new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found"
+                        )
+                );
+
+        return toResponse(user);
     }
 
     private UserResponse toResponse(User user) {

@@ -24,6 +24,8 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
+
     @Bean
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
@@ -34,6 +36,9 @@ public class SecurityConfig {
                 )
                 .csrf(csrf ->
                         csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                                .ignoringRequestMatchers(
+                                        "/api/auth/register"
+                                )
                 )
                 .authorizeHttpRequests(auth ->
                         auth
@@ -43,7 +48,8 @@ public class SecurityConfig {
                                         "/api/auth/csrf"
                                 ).permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .anyRequest().authenticated()
+                                .anyRequest()
+                                .authenticated()
                 )
                 .formLogin(form ->
                         form
@@ -87,6 +93,16 @@ public class SecurityConfig {
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
         ));
+
+        configuration.setAllowedHeaders(
+                List.of(
+                        "Content-Type",
+                        "X-XSRF-TOKEN",
+                        "X-CSRF-TOKEN",
+                        "Accept"
+                )
+        );
+
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
