@@ -37,14 +37,4 @@ public class WeatherAlert {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "created_by_id", nullable = false)
     private User createdBy;
-
-    public WeatherAlert(Long id, String description, String locationName, BigDecimal latitude, BigDecimal longitude, Severity severity, User createdBy) {
-        this.id = id;
-        this.description = description;
-        this.locationName = locationName;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.severity = severity;
-        this.createdBy = createdBy;
-    }
 }
