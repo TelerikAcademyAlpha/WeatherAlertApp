@@ -42,7 +42,6 @@ Before running the project, install:
 - Java 21
 - Maven
 - PostgreSQL
-- Node.js
 
 ## Database Setup
 
