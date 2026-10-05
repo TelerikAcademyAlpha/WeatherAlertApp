@@ -35,13 +35,6 @@ asynchronous geographic coordinate enrichment.
 - Mockito
 - Springdoc OpenAPI
 
-### Frontend
-
-- React
-- Vite
-- React Router
-- Axios
-
 ## Requirements
 
 Before running the project, install:
@@ -50,7 +43,6 @@ Before running the project, install:
 - Maven
 - PostgreSQL
 - Node.js
-- npm
 
 ## Database Setup
 
