@@ -41,8 +41,6 @@ public class AlertCoordinateUpdater {
         alert.setLatitude(latitude);
         alert.setLongitude(longitude);
 
-        repository.save(alert);
-
         return true;
     }
 }
